@@ -1,3 +1,3 @@
-# Every change needs a review from the code owner.
+# Every change needs a review from one of the code owners.
 # The owner must be a collaborator with Write access, otherwise GitHub ignores this line.
-*       @vitdevdotnet
+*       @vitdevdotnet @vitaliibarantsov
