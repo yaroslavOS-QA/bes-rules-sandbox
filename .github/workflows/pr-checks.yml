@@ -2,7 +2,7 @@ name: PR Checks
 
 # Sandbox copy of the PR checks from the real repository. "Code rules" and "Branch and PR title"
 # are identical to the real workflow; the build job is a stub with the same name,
-# so the ruleset can require all three checks exactly as in the real repository.
+# so the ruleset can require all three checks exactly as in the real repository (probe).
 
 on:
   pull_request:
