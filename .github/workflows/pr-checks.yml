@@ -1,0 +1,76 @@
+name: PR Checks
+
+# Sandbox copy of the PR checks from the real repository. "Code rules" and "Branch and PR title"
+# are identical to the real workflow; the build job is a stub with the same name,
+# so the ruleset can require all three checks exactly as in the real repository.
+
+on:
+  pull_request:
+    branches: [ dev, master ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  rules:
+    name: Code rules
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check code rules against baseline
+        run: python tools/CheckRules/check_rules.py
+
+  naming:
+    name: Branch and PR title
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check branch name and PR title
+        shell: bash
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          BASE_REF: ${{ github.base_ref }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          failed=0
+
+          branch_pattern='^(feature|release|hotfix)/[a-z0-9][a-z0-9._-]*$'
+          if [[ "$HEAD_REF" =~ $branch_pattern ]] || [[ "$HEAD_REF" == "dev" && "$BASE_REF" == "master" ]]; then
+            echo "Branch name OK: $HEAD_REF"
+          else
+            echo "::error::Branch '$HEAD_REF' must be feature/<name>, release/<version> or hotfix/<version> (lowercase, kebab-case)."
+            failed=1
+          fi
+
+          title_pattern='^(feat|fix|refactor|perf|test|docs|chore|build|ci|style|revert)(\([a-z0-9._-]+\))?!?: .+'
+          release_pattern='^CHANGE ASSEMBLY VERSION TO [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'
+          if [[ "$PR_TITLE" =~ $title_pattern ]] || [[ "$PR_TITLE" =~ $release_pattern ]]; then
+            echo "PR title OK: $PR_TITLE"
+          else
+            echo "::error::PR title '$PR_TITLE' must follow Conventional Commits, e.g. 'feat(sample): add check', or be a release title 'CHANGE ASSEMBLY VERSION TO X.Y.Z.W'."
+            failed=1
+          fi
+
+          exit $failed
+
+  build:
+    name: Build (Debug R26) and smoke tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Stub build
+        run: echo "Sandbox stub. The real job builds the solution on windows-latest."

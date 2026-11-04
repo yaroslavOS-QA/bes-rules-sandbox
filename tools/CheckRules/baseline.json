@@ -1,0 +1,12 @@
+{
+  "cyrillic": {},
+  "lookup-parameter": {
+    "source/Sample/LegacyTool.cs": 1
+  },
+  "bes-type-prefix": {
+    "source/Sample/LegacyTool.cs": 1
+  },
+  "cross-project-source": {},
+  "layer-dependency": {},
+  "package-version": {}
+}
