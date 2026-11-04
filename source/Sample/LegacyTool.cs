@@ -7,6 +7,7 @@ namespace Sample
     {
         public object Read(dynamic element)
         {
+            var mark = element.LookupParameter("Mark");
             return element.LookupParameter("Comments");
         }
     }
